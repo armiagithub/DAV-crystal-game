@@ -7,3 +7,6 @@ If you click on the you can view the code and change it.
 After changing anything you must commit witch then will requare my permission to be added to the main thing.
 You can add tips and how to play this in the wiki tab.
 You can only run this on a pc with python installed (can change later but then we can not edit it).
+/n
+New ideas or comments or changes or tips in the discussions tab please.
+Dion, Don't go crazy.
