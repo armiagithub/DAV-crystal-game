@@ -29,21 +29,17 @@ Persistence
 - Local profiles are stored in: ~/.dungeon_game/profiles/<name>.json
 - The OnlineAuthClient is a client for an online endpoint (not included). If no server is available, the GUI will fallback to local-only profiles.
 
-Files added/modified
-- src/dungeon_game/persistence.py  -- local + optional online account client
-- src/dungeon_game/network.py      -- simple JSON-over-TCP client helper
-- src/dungeon_game/server.py       -- small threaded authoritative server
-- src/dungeon_game/gui.py          -- Pygame GUI skeleton (editable art)
-- src/dungeon_game/multiplayer.py  -- server-side orchestrator + helper functions
-- src/dungeon_game/level.py        -- updated to scale mobs by player count
-- src/dungeon_game/game.py         -- updated run_level accepts player_count, multiplayer-friendly
-- src/dungeon_game/main.py         -- launcher updated to choose GUI/Server/CLI
+# Place-holder-name
+A game coded by Armia Mousavian. Graphics by Dion Brown, Story and design by Vincent Cabrera.
 
-Notes
-- The provided networking/server code is a minimal prototype. For public internet play, you'll want to add authentication, encryption (TLS), and handle NAT/port forwarding or run a hosted server.
-- The GUI uses simple placeholders for graphics so you can swap in your sprites.
-
-If you want, I can:
-- Push these changes to a branch in armiagithub/Place-holder-name.
+How to use this:
+Above are the files for this project.
+If you click on the you can view the code and change it.
+After changing anything you must commit witch then will requare my permission to be added to the main thing.
+You can add tips and how to play this in the wiki tab.
+You can only run this on a pc with python installed (can change later but then we can not edit it).
+/n
+New ideas or comments or changes or tips in the discussions tab please.
+Dion, Don't go crazy.
 - Create issues for the multiplayer, UI, and persistence work and assign them to you/Dion/Vincent.
 - Expand the server into a more robust authoritative server with tickrate and action reconciliation.
