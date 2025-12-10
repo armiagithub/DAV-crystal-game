@@ -8,7 +8,7 @@ def print_usage():
     print("Usage:")
     print("  python -m dungeon_game.main gui     # start GUI")
     print("  python -m dungeon_game.main server  # start multiplayer server (simple)")
-    print("  python -m dungeon_game.main demo    # run CLI demo")
+    print("  python -m dungeon_game.demo    # run CLI demo")
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
