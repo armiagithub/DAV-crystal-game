@@ -1,3 +1,4 @@
+Working(changed daily): NO
 # Dungeon: Placeholder Name (extended)
 
 This repo contains a dungeon roguelike prototype (Python) with:
@@ -43,7 +44,4 @@ Notes
 - The provided networking/server code is a minimal prototype. For public internet play, you'll want to add authentication, encryption (TLS), and handle NAT/port forwarding or run a hosted server.
 - The GUI uses simple placeholders for graphics so you can swap in your sprites.
 
-If you want, I can:
-- Push these changes to a branch in armiagithub/Place-holder-name.
-- Create issues for the multiplayer, UI, and persistence work and assign them to you/Dion/Vincent.
-- Expand the server into a more robust authoritative server with tickrate and action reconciliation.
+Dio your picturs are in src/assets/images
