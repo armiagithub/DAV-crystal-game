@@ -36,9 +36,4 @@ Files in scaffold
 - src/dungeon_game/*.py: core engine
 - README.md, DESIGN.md: documentation
 
-If you'd like, I can:
-- Create GitHub issues for the roadmap items and assign them
-- Push this scaffold to your repository
-- Expand the demo into a Pygame prototype
-
-Tell me which of the above you'd like me to do next.
+Most if false: all created before finishing
