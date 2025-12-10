@@ -44,4 +44,4 @@ Notes
 - The provided networking/server code is a minimal prototype. For public internet play, you'll want to add authentication, encryption (TLS), and handle NAT/port forwarding or run a hosted server.
 - The GUI uses simple placeholders for graphics so you can swap in your sprites.
 
-Dio your picturs are in src/assets/images
+Dion your picturs are in src/assets/images
