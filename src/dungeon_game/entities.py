@@ -1,3 +1,4 @@
+# src/dungeon_game/entities.py
 from dataclasses import dataclass, field
 import random
 from typing import Dict, Optional, List
@@ -33,7 +34,7 @@ class Item:
     defense_bonus: int = 0
     cost: int = 0
     tier: int = 1
-    type: str = "melee"  # 'melee' | 'ranged' | 'magic' | 'armor' | other
+    type: str = "melee"  # 'melee' | 'ranged' | 'magic' | 'armor' | 'artifact' | other
 
 
 @dataclass
@@ -48,6 +49,7 @@ class Player(Entity):
     equipped_ranged: Optional[Item] = None
     equipped_magic: Optional[Item] = None
     equipped_armor: Optional[Item] = None
+    equipped_artifact: Optional[Item] = None
 
     # base stats for recomputation
     base_hp: int = 100
@@ -76,6 +78,8 @@ class Player(Entity):
             self.equipped_magic = item
         elif item.type == "armor":
             self.equipped_armor = item
+        elif item.type == "artifact":
+            self.equipped_artifact = item
         else:
             # Unknown type: put into inventory if possible
             self.add_to_inventory(item)
@@ -97,6 +101,10 @@ class Player(Entity):
         if self.equipped_armor:
             atk += self.equipped_armor.attack_bonus
             dfs += self.equipped_armor.defense_bonus
+        if self.equipped_artifact:
+            # artifacts may give small bonuses
+            atk += self.equipped_artifact.attack_bonus
+            dfs += self.equipped_artifact.defense_bonus
         self.attack = max(1, atk)
         self.defense = max(0, dfs)
 
@@ -130,7 +138,7 @@ class Player(Entity):
         if item is None:
             return False
         # Determine slot
-        if item.type in ("melee", "ranged", "magic", "armor"):
+        if item.type in ("melee", "ranged", "magic", "armor", "artifact"):
             # equip into that slot and remove from inventory (put currently equipped into inventory)
             replaced_equipped = None
             if item.type == "melee":
@@ -145,6 +153,9 @@ class Player(Entity):
             elif item.type == "armor":
                 replaced_equipped = self.equipped_armor
                 self.equipped_armor = item
+            elif item.type == "artifact":
+                replaced_equipped = self.equipped_artifact
+                self.equipped_artifact = item
             # remove from inventory
             self.inventory[index] = None
             # try to place replaced_equipped back into inventory; if no space, drop it (or swap into this index)
@@ -162,6 +173,8 @@ class Player(Entity):
                         self.equipped_magic = replaced_equipped
                     elif item.type == "armor":
                         self.equipped_armor = replaced_equipped
+                    elif item.type == "artifact":
+                        self.equipped_artifact = replaced_equipped
                     return False
             self.recompute_stats()
             return True
@@ -177,6 +190,30 @@ class Player(Entity):
 
     def heal(self, amount: int):
         self.hp = min(self.max_hp, self.hp + amount)
+
+    # --- new helper methods expected by GUI ---
+
+    def effective_inventory_size(self) -> int:
+        """
+        Return the current effective inventory size (number of slots to display).
+        Currently fixed to the inventory length; kept as a separate method in case
+        artifacts or upgrades later increase capacity.
+        """
+        return len(self.inventory)
+
+    def clear_inventory_and_equipment(self):
+        """
+        Clear player's inventory and unequip all items. Recompute stats and reset inventory.
+        Called when the player dies (GUI.handle_death).
+        """
+        self.inventory = [None] * len(self.inventory)
+        self.equipped_melee = None
+        self.equipped_ranged = None
+        self.equipped_magic = None
+        self.equipped_armor = None
+        self.equipped_artifact = None
+        # reset stats to base values based on initial base_*
+        self.recompute_stats()
 
 
 # Class-specific factories for easy creation with different base stats

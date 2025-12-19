@@ -42,7 +42,7 @@ def vec_norm(v: Vec2) -> Vec2:
 
 
 class Projectile:
-    def __init__(self, x: float, y: float, vx: float, vy: float, damage: int, life: float = 2.0):
+    def __init__(self, x: float, y: float, vx: float, vy: float, damage: int, life: float = 2.0, image: Optional[pygame.Surface] = None):
         self.x = x
         self.y = y
         self.vx = vx
@@ -50,7 +50,13 @@ class Projectile:
         self.damage = damage
         self.life = life  # seconds
         self.spawn = time.time()
-        self.radius = 4
+        # if an image is supplied, keep it and set radius from image size; otherwise use default small radius
+        self.image = image
+        if self.image:
+            w, h = self.image.get_size()
+            self.radius = max(4, int(max(w, h) / 2))
+        else:
+            self.radius = 4
 
     def update(self, dt: float):
         self.x += self.vx * dt
@@ -61,14 +67,20 @@ class Projectile:
 
 
 class ArenaMob:
-    def __init__(self, mob: Mob, x: float, y: float):
+    def __init__(self, mob: Mob, x: float, y: float, image: Optional[pygame.Surface] = None):
         self.mob = mob
         self.x = x
         self.y = y
-        self.radius = max(8, int(mob.hp ** 0.4))  # visual size
+        # if an image is supplied, use its size to determine radius and keep the image for rendering
+        self.image = image
+        if self.image:
+            w, h = self.image.get_size()
+            self.radius = max(8, int(max(w, h) / 2))
+        else:
+            self.radius = max(8, int(mob.hp ** 0.4))  # visual size
         self.speed = max(20.0, 40.0 - mob.defense * 2)  # mobs slower if high defense
         self.color = (200, 80, 80)
-        # choose look by kind
+        # choose look by kind (used when image not provided)
         if getattr(mob, "kind", "") == "slime":
             self.color = (80, 200, 120)
         elif getattr(mob, "kind", "") == "skeleton":
@@ -111,6 +123,8 @@ class ArenaPlayer:
         self.melee_range = 28
         self.ranged_cooldown = 0.4
         self.last_ranged = 0.0
+        # auto-fire tracking (used by artifact/amulet)
+        self.last_auto_fire = 0.0
 
     def is_alive(self) -> bool:
         return self.player.is_alive()
@@ -142,7 +156,10 @@ class ArenaPlayer:
                 hits.append((m, damage))
         return hits
 
-    def ranged_attack(self, target_pos: Tuple[int, int]) -> Optional[Projectile]:
+    def ranged_attack(self, target_pos: Tuple[int, int], image: Optional[pygame.Surface] = None) -> Optional[Projectile]:
+        """
+        Fire a projectile toward target_pos. If image is provided it will be attached to the Projectile.
+        """
         now = time.time()
         if now - self.last_ranged < self.ranged_cooldown:
             return None
@@ -154,10 +171,16 @@ class ArenaPlayer:
         vx = nd[0] * speed
         vy = nd[1] * speed
         dmg = max(1, self.player.attack // 2)
-        return Projectile(self.x + nd[0] * (self.radius + 4), self.y + nd[1] * (self.radius + 4), vx, vy, dmg, life=2.0)
+        return Projectile(self.x + nd[0] * (self.radius + 4), self.y + nd[1] * (self.radius + 4), vx, vy, dmg, life=2.0, image=image)
 
     def take_damage(self, amount: int):
-        return self.player.take_damage(amount)
+        """
+        Accept a damage value already computed by the scene (scene subtracts defense before calling).
+        Subtract it directly from the player's HP to avoid double-defense issues.
+        """
+        applied = max(0, int(amount))
+        self.player.hp = max(0, self.player.hp - applied)
+        return applied
 
     def equip_item(self, item: Item) -> bool:
         """
