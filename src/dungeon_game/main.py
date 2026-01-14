@@ -3,6 +3,8 @@ Launcher. Run as:
 python -m dungeon_game.main
 """
 import sys
+import importlib
+import traceback
 
 def print_usage():
     print("Usage:")
@@ -18,10 +20,22 @@ if __name__ == "__main__":
     cmd = sys.argv[1].lower()
     if cmd == "gui":
         try:
-            from .gui import launch_gui
-        except Exception as e:
-            print("Failed to import GUI:", e)
+            # Import the gui module dynamically so we can provide better diagnostics
+            gui_mod = importlib.import_module(f"{__package__}.gui")
+        except Exception:
+            print("Failed to import GUI module; full traceback follows:")
+            traceback.print_exc()
             raise
+        # Ensure the symbol exists and is callable
+        try:
+            launch_gui = getattr(gui_mod, "launch_gui")
+        except AttributeError:
+            print(f"Module loaded from: {getattr(gui_mod, '__file__', '<unknown>')}")
+            print("Available names in the module:")
+            names = [n for n in dir(gui_mod) if not n.startswith("_")]
+            print(names)
+            raise ImportError("'launch_gui' not found in dungeon_game.gui; see available names above")
+        # Call the launcher
         launch_gui()
     elif cmd == "server":
         from .server import start_server
